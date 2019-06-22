@@ -10,7 +10,7 @@ return [
     'basePath' => dirname(__DIR__),
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'language' => 'en-US',
     'components' => [
@@ -36,6 +36,11 @@ return [
                 'domain' => 'localhost',
             ],
             */
+        ],
+    ],
+    'modules' => [
+        'admin' => [
+            'class' => 'app\modules\admin\Module',
         ],
     ],
     'params' => $params,

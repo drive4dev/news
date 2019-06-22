@@ -12,6 +12,7 @@ class m190616_150208_create_comment_table extends Migration
      */
     public function safeUp()
     {
+
         $this->createTable('{{%comment}}', [
             'id' => $this->primaryKey(),
             'text' => $this->string(),
@@ -21,33 +22,34 @@ class m190616_150208_create_comment_table extends Migration
 
         $this->createIndex(
             'idx-comment-user_id',
-            'comment',
+            '{{%comment}}',
             'user_id'
+        );
+
+        $this->createIndex(
+            'idx-comment-news_id',
+            '{{%comment}}',
+            'news_id'
         );
 
         $this->addForeignKey(
             'fk-comment-user_id',
-            'comment',
+            '{{%comment}}',
             'user_id',
             'user',
             'id',
             'CASCADE'
         );
 
-        $this->createIndex(
-            'idx-news_id',
-            'comment',
-            'news_id'
+        $this->addForeignKey(
+            'fk-comment-news_id',
+            '{{%comment}}',
+            'news_id',
+            'news',
+            'id',
+            'CASCADE'
         );
 
-        $this->addForeignKey(
-          'fk-news_id',
-          'comment',
-          'news_id',
-          'news',
-          'id',
-          'CASCADE'
-        );
     }
 
     /**
@@ -55,6 +57,10 @@ class m190616_150208_create_comment_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex('idx-comment-user_id', '{{%comment}}');
+        $this->dropIndex('idx-comment-news_id', '{{%comment}}');
+        $this->dropForeignKey('fk-comment-user_id','{{%comment}}');
+        $this->dropForeignKey('fk-comment-news_id','{{%comment}}');
         $this->dropTable('{{%comment}}');
     }
 }

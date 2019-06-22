@@ -16,8 +16,7 @@ class m190616_145911_create_user_table extends Migration
             'id' => $this->primaryKey(),
             'login' => $this->string(),
             'password'=> $this->string(),
-            'email' => $this->string(),
-            'isAdmin' => $this->boolean()->defaultValue(0) // гомырка для rbac :)
+            'isAdmin' => $this->boolean()->defaultValue(false)
         ]);
     }
 

@@ -18,9 +18,16 @@ class m190616_145421_create_news_table extends Migration
             'active' => $this->boolean(),
             'title' => $this->string(),
             'category_id' => $this->integer(),
-            'preview' => $this->text(),
-            'content' => $this->text()
+            'preview' => $this->string(),
+            'content' => $this->text(),
+            'slug' => $this->string()
         ]);
+
+        $this->createIndex(
+            'idx-slug_news',
+            '{{%news}}',
+            'slug'
+            );
     }
 
     /**
