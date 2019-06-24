@@ -33,7 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'created_at',
             'active:boolean',
             'title',
-            'category_id',
+            [
+                'attribute' => 'category_id',
+                'value' => $model->category->title
+            ],
             'preview',
             'content:ntext',
             'slug',

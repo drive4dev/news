@@ -14,7 +14,7 @@ class m190616_145421_create_news_table extends Migration
     {
         $this->createTable('{{%news}}', [
             'id' => $this->primaryKey(),
-            'created_at' => $this->date(),
+            'created_at' => $this->timestamp(),
             'active' => $this->boolean(),
             'title' => $this->string(),
             'category_id' => $this->integer(),

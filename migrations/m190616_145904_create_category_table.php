@@ -28,7 +28,8 @@ class m190616_145904_create_category_table extends Migration
             '{{%news}}',
             'category_id',
             '{{%category}}',
-            'id'
+            'id',
+            'CASCADE' // горит сарай, гори и хата
         );
     }
 
@@ -37,6 +38,15 @@ class m190616_145904_create_category_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            'idx-parent_category_id',
+            '{{%category}}'
+        );
+        $this->dropForeignKey(
+            'fk-news-category_id',
+            '{{%news}}'
+        );
+
         $this->dropTable('{{%category}}');
     }
 }

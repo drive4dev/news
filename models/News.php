@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\SluggableBehavior;
+use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "news".
@@ -37,8 +38,8 @@ class News extends \yii\db\ActiveRecord
         return [
             [['title', 'preview', 'content'], 'required'],
             [['created_at'], 'safe'],
-            [['created_at'], 'date', 'format' => 'php:Y-m-d'],
-            [['created_at'], 'default', 'value' => date('Y-m-d')],
+            [['created_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['created_at'], 'default', 'value' => date('Y-m-d H:i:s')],
             [['active'], 'boolean'],
             [['category_id'], 'default', 'value' => null],
             [['category_id'], 'integer'],
@@ -88,5 +89,32 @@ class News extends \yii\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+    public static function getPaginatedDataProvider($category = false)
+    {
+        $params = ['active' => true];
+        if ($category) {
+            $params['category_id'] = $category;
+        }
+
+        return new ActiveDataProvider([
+            'query' => self::find()->where($params)->orderBy('created_at DESC'),
+            'pagination' => [
+                'pageSize' => 3,
+                'defaultPageSize' => 3,
+                'forcePageParam' => false,
+            ],
+        ]);
+    }
+
+    public static function findBySlug($slug)
+    {
+        return News::find()->where(['slug' => $slug])->one();
+    }
+
+    public function getDate()
+    {
+        return Yii::$app->formatter->asDate($this->created_at);
     }
 }

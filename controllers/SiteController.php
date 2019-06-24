@@ -2,42 +2,14 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
+use app\models\CommentForm;
+use app\models\News;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
+use yii\web\NotFoundHttpException;
 
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -61,68 +33,36 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = News::getPaginatedDataProvider();
+
+        return $this->render('index', ['listDataProvider' => $dataProvider]);
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
+    public function actionView($slug)
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+        $news = News::findBySlug($slug);
+        if ($news) {
+
+            $commentsData = new ActiveDataProvider([
+                'query' => $news->getComments(),
+            ]);
+
+            $commentForm = new CommentForm();
+
+            return $this->render('view', [
+                'model' => $news,
+                'commentsList' => $commentsData,
+                'commentForm' => $commentForm
+            ]);
+        } else {
+            throw new NotFoundHttpException('Новость не найдена');
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
+    public function actionCategory($id)
     {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
+        $dataProvider = News::getPaginatedDataProvider($id);
+        return $this->render('index', ['listDataProvider' => $dataProvider]);
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }

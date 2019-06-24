@@ -2,6 +2,7 @@
 
 namespace app\modules\admin\controllers;
 
+use app\models\Category;
 use Yii;
 use app\models\News;
 use app\models\NewsSearch;
@@ -70,8 +71,11 @@ class NewsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        $categories = Category::getDropdownData();
+
         return $this->render('create', [
             'model' => $model,
+            'categories' => $categories
         ]);
     }
 
@@ -90,8 +94,11 @@ class NewsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+        $categories = Category::getDropdownData();
+
         return $this->render('update', [
             'model' => $model,
+            'categories' => $categories
         ]);
     }
 

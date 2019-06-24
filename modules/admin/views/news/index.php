@@ -30,10 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'created_at',
             'active:boolean',
             'title',
-            'category_id',
-            //'preview',
+            [
+                'attribute' => 'category_id',
+                'value' => 'category.title'
+            ],
+            'preview',
             //'content:ntext',
-            //'slug',
+            'slug',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
