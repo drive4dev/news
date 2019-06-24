@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "news".
@@ -20,7 +21,7 @@ use yii\data\ActiveDataProvider;
  *
  * @property Comment[] $comments
  */
-class News extends \yii\db\ActiveRecord
+class News extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -108,6 +109,10 @@ class News extends \yii\db\ActiveRecord
         ]);
     }
 
+    /**
+     * @param $slug
+     * @return ActiveRecord|null
+     */
     public static function findBySlug($slug)
     {
         return News::find()->where(['slug' => $slug])->one();

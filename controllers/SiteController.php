@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\CommentForm;
 use app\models\News;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -65,4 +66,17 @@ class SiteController extends Controller
         return $this->render('index', ['listDataProvider' => $dataProvider]);
     }
 
+    public function actionComment($id, $slug)
+    {
+        $request = Yii::$app->request;
+        $model = new CommentForm();
+
+        if ($request->isPost) {
+            $model->load($request->post());
+            if ($model->saveComment($id)) {
+                Yii::$app->getSession()->setFlash('comment', 'Ваш коментарий добавлен');
+                return $this->redirect(['site/view', 'slug' => $slug]);
+            }
+        }
+    }
 }

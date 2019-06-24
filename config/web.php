@@ -51,7 +51,7 @@ $config = [
                 'news' => 'site/index',
                 'news/<slug>/' => 'site/view',
                 'news/<page:\d+>' => 'news/',
-                'category/<id:\d+>' => 'site/category'
+                'category/<id:\d+>' => 'site/category',
             ],
         ],
     ],

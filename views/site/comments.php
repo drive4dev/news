@@ -18,14 +18,14 @@ echo ListView::widget([
         <?php endif; ?>
         <?php
         $form = \yii\widgets\ActiveForm::begin([
-            'action' => ['site/comment', 'id' => $model->id],
+            'action' => ['site/comment' , 'id' => $news->id, 'slug' => $news->slug],
             'options' => ['class' => 'form-horizontal contact-form', 'role' => 'form']]) ?>
         <div class="form-group">
             <div class="col-md-12">
-                <?= $form->field($commentForm, 'comment')->textarea(['class' => 'form-control', 'placeholder' => 'Write Message'])->label(false) ?>
+                <?= $form->field($commentForm, 'comment')->textarea(['class' => 'form-control', 'placeholder' => 'Write Comment'])->label(false) ?>
             </div>
         </div>
-        <button type="submit" class="btn send-btn">Post Comment</button>
+        <button type="submit" class="btn send-btn">Comment</button>
         <?php \yii\widgets\ActiveForm::end(); ?>
     </div><!--end leave comment-->
 <?php endif; ?>
