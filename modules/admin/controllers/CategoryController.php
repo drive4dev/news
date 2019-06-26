@@ -66,12 +66,22 @@ class CategoryController extends Controller
     {
         $model = new Category();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if ($model->parent == null) {
+                $model->makeRoot();
+            } else {
+                $parent = Category::find()->andWhere(['id' => $model->parent])->one();
+                $model->appendTo($parent);
+            }
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
+            'dropdown' => Category::getDropdown()
         ]);
     }
 
@@ -92,6 +102,7 @@ class CategoryController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'dropdown' => Category::getDropdown()
         ]);
     }
 

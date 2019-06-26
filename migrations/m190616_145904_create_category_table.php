@@ -14,22 +14,20 @@ class m190616_145904_create_category_table extends Migration
     {
         $this->createTable('{{%category}}', [
             'id' => $this->primaryKey(),
-            'title' => $this->text(),
-            'parent_id' => $this->integer()
+            'title' => $this->string(),
+            'lft' => $this->integer()->notNull(),
+            'rgt' => $this->integer()->notNull(),
+            'depth' => $this->integer()->notNull(),
+            'url' => $this->string(50)->notNull(),
         ]);
 
-        $this->createIndex(
-            'idx-parent_category_id',
-            '{{%category}}',
-            'parent_id'
-            );
         $this->addForeignKey(
             'fk-news-category_id',
             '{{%news}}',
             'category_id',
             '{{%category}}',
             'id',
-            'CASCADE' // горит сарай, гори и хата
+            'CASCADE' // УДОЛИ категорию и удалятся все новости из неё
         );
     }
 
@@ -38,10 +36,6 @@ class m190616_145904_create_category_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropIndex(
-            'idx-parent_category_id',
-            '{{%category}}'
-        );
         $this->dropForeignKey(
             'fk-news-category_id',
             '{{%news}}'

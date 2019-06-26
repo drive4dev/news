@@ -1,11 +1,12 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
 use app\widgets\Alert;
+use kartik\nav\NavX;
 use yii\helpers\Html;
-use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
@@ -35,13 +36,23 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo Nav::widget([
+    echo NavX::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Categories', 'url' => ['/site/index']],
+            ['label' => 'Categories', 'items' => [
+                ['label' => 'news', 'items' => [
+                    ['label' => 'news', 'url' => ['/site/index']],
+                    ['label' => 1, 'url' => ['/']]
+                ]
+                ],
+                ['label' => 1, 'url' => ['/']]
+            ]
+
+
+            ],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/auth/login']]
+            ['label' => 'Login', 'url' => ['/auth/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/auth/logout'], 'post')

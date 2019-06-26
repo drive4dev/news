@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+use creocoder\nestedsets\NestedSetsBehavior;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -10,10 +11,17 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property string $title
- * @property int $parent_id
+ * @property int $lft
+ * @property int $rgt
+ * @property int $depth
+ * @property string $url
+ *
+ * @property News[] $news
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends ActiveRecord
 {
+    public $parent;
+
     /**
      * {@inheritdoc}
      */
@@ -29,8 +37,9 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             [['title'], 'string'],
-            [['parent_id'], 'default', 'value' => null],
-            [['parent_id'], 'integer'],
+            [['title'], 'required'],
+            [['lft', 'rgt', 'depth', 'parent'], 'integer'],
+            [['lft', 'rgt', 'depth', 'url'], 'safe']
         ];
     }
 
@@ -42,7 +51,10 @@ class Category extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'parent_id' => 'Parent ID',
+            'lft' => 'Lft',
+            'rgt' => 'Rgt',
+            'depth' => 'Depth',
+            'url' => 'Url',
         ];
     }
 
@@ -54,7 +66,43 @@ class Category extends \yii\db\ActiveRecord
         return $this->hasMany(News::className(), ['category_id' => 'id']);
     }
 
-    public static function getDropdownData(){
-         return ArrayHelper::map(self::find()->all(), 'id', 'title');
+    public function behaviors()
+    {
+        return [
+            'tree' => [
+                'class' => NestedSetsBehavior::className(),
+            ],
+        ];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+        ];
+    }
+
+    public static function find()
+    {
+        return new CategoryQuery(get_called_class());
+    }
+
+    public static function getDropdown()
+    {
+        return ArrayHelper::map(
+            self::find()->all(),
+            'id',
+            'title'
+        );
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (empty($this->url)) {
+            $this->url = '/category/' . $this->id;
+            $this->updateAttributes(['url']);
+        }
     }
 }
