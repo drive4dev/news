@@ -71,7 +71,7 @@ class NewsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        $categories = Category::getDropdownData();
+        $categories = Category::getDropdownTree();
 
         return $this->render('create', [
             'model' => $model,
@@ -94,7 +94,7 @@ class NewsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        $categories = Category::getDropdownData();
+        $categories = Category::getDropdownForNews();
 
         return $this->render('update', [
             'model' => $model,

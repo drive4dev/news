@@ -4,13 +4,13 @@ namespace app\models;
 
 use creocoder\nestedsets\NestedSetsBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "category".
  *
  * @property int $id
  * @property string $title
+ * @property integer $tree
  * @property int $lft
  * @property int $rgt
  * @property int $depth
@@ -30,6 +30,28 @@ class Category extends ActiveRecord
         return 'category';
     }
 
+    public function behaviors()
+    {
+        return [
+            'tree' => [
+                'class' => NestedSetsBehavior::className(),
+                'treeAttribute' => 'tree',
+            ],
+        ];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+        ];
+    }
+
+    public static function find()
+    {
+        return new CategoryQuery(get_called_class());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -38,8 +60,9 @@ class Category extends ActiveRecord
         return [
             [['title'], 'string'],
             [['title'], 'required'],
-            [['lft', 'rgt', 'depth', 'parent'], 'integer'],
-            [['lft', 'rgt', 'depth', 'url'], 'safe']
+            [['tree', 'lft', 'rgt', 'depth',], 'default', 'value' => null],
+            [['tree', 'lft', 'rgt', 'depth', 'parent',], 'integer'],
+            [['lft', 'rgt', 'depth', 'url', 'tree'], 'safe']
         ];
     }
 
@@ -66,34 +89,82 @@ class Category extends ActiveRecord
         return $this->hasMany(News::className(), ['category_id' => 'id']);
     }
 
-    public function behaviors()
+    /**
+     * Get parent's node
+     * @return \yii\db\ActiveQuery
+     */
+    public function getParent()
     {
-        return [
-            'tree' => [
-                'class' => NestedSetsBehavior::className(),
-            ],
-        ];
+        return $this->parents(1)->one();
     }
 
-    public function transactions()
+    /**
+     * Get a full tree as a list, except the node and its children
+     * @param  integer $node_id node's ID
+     * @return array array of node
+     */
+    public static function getDropdownTree($node_id = 0)
     {
-        return [
-            self::SCENARIO_DEFAULT => self::OP_ALL,
-        ];
+        // don't include children and the node
+        $children = [];
+
+        if (!empty($node_id))
+            $children = array_merge(
+                self::findOne($node_id)->children()->column(),
+                [$node_id]
+            );
+
+        $rows = self::find()->
+        select('id, title, depth')->
+        where(['NOT IN', 'id', $children])->
+        orderBy('tree, lft')->
+        all();
+
+        $return = [];
+        foreach ($rows as $row)
+            $return[$row->id] = str_repeat('-', $row->depth) . ' ' . $row->title;
+
+        return $return;
     }
 
-    public static function find()
+    /**
+     * Get a full tree as a list, except the node and its children
+     * @param  integer $node_id node's ID
+     * @return array array of node
+     */
+    public static function getDropdownForNews($node_id = 0)
     {
-        return new CategoryQuery(get_called_class());
+        // don't include children and the node
+        $children = [];
+
+        if (!empty($node_id))
+            $children = array_merge(
+                self::findOne($node_id)->children()->column(),
+                [$node_id]
+            );
+
+        $rows = self::find()->leaves()->all();
+
+        $return = [];
+        foreach ($rows as $row)
+            $return[$row->id] = str_repeat('-', $row->depth) . ' ' . $row->title;
+
+        return $return;
     }
 
-    public static function getDropdown()
+    public static function getChildIds($category_id)
     {
-        return ArrayHelper::map(
-            self::find()->all(),
-            'id',
-            'title'
-        );
+        $category = self::findOne($category_id);
+
+        $children = $category->children()->select('id')->all();
+
+        $ids = [];
+        if (count($children) > 0) {
+            foreach ($children as $child) {
+                $ids[] = $child->id;
+            }
+        }
+        return $ids;
     }
 
     public function afterSave($insert, $changedAttributes)
@@ -105,4 +176,5 @@ class Category extends ActiveRecord
             $this->updateAttributes(['url']);
         }
     }
+
 }

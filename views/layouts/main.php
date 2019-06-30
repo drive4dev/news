@@ -36,20 +36,13 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo NavX::widget([
+        echo NavX::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Categories', 'items' => [
-                ['label' => 'news', 'items' => [
-                    ['label' => 'news', 'url' => ['/site/index']],
-                    ['label' => 1, 'url' => ['/']]
-                ]
-                ],
-                ['label' => 1, 'url' => ['/']]
-            ]
-
-
+            ['label' => 'Categories',
+                'options'=> ['class'=>'dropdown-category-nav'],
+                'items' => \app\services\NavArray::getData()
             ],
             Yii::$app->user->isGuest ? (
             ['label' => 'Login', 'url' => ['/auth/login']]

@@ -12,12 +12,13 @@ class m190616_145904_create_category_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%category}}', [
-            'id' => $this->primaryKey(),
-            'title' => $this->string(),
-            'lft' => $this->integer()->notNull(),
-            'rgt' => $this->integer()->notNull(),
-            'depth' => $this->integer()->notNull(),
+        $this->createTable('category', [
+            'id'         => $this->primaryKey(),
+            'title'       => $this->string()->notNull(),
+            'tree'       => $this->integer(),
+            'lft'        => $this->integer()->notNull(),
+            'rgt'        => $this->integer()->notNull(),
+            'depth'      => $this->integer()->notNull(),
             'url' => $this->string(50)->notNull(),
         ]);
 
@@ -29,6 +30,15 @@ class m190616_145904_create_category_table extends Migration
             'id',
             'CASCADE' // УДОЛИ категорию и удалятся все новости из неё
         );
+
+        /*$this->insert('categories', [
+            'title' => 'Root',
+            'tree' => '1',
+            'lft' => 1,
+            'rgt' => 2,
+            'depth' => 0,
+            'url' => '/category/1'
+        ]);*/
     }
 
     /**

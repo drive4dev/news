@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Category;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -8,16 +9,17 @@ use yii\widgets\ActiveForm;
 /* @var $dropdown array */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
 <div class="category-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'parent')->dropDownList($dropdown) ?>
-
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'url')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'parent')->dropDownList($tree,
+        ['prompt' => 'No Parent (saved as root)', 'class' => 'form-control']) ?>
+    <?= Html::label('Parent', 'parent', ['class' => 'control-label']);?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

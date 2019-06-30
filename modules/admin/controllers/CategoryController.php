@@ -71,17 +71,15 @@ class CategoryController extends Controller
             if ($model->parent == null) {
                 $model->makeRoot();
             } else {
-                $parent = Category::find()->andWhere(['id' => $model->parent])->one();
+                $parent = Category::findOne($model->parent);
                 $model->appendTo($parent);
             }
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            'dropdown' => Category::getDropdown()
+            'tree' => Category::getDropdownTree($model->id)
         ]);
     }
 
@@ -95,14 +93,27 @@ class CategoryController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->parent = $model->getParent()->id;
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                if (empty($model->parent)) {
+                    if (!$model->isRoot())
+                        $model->makeRoot();
+                } else // move node to other root
+                {
+                    if ($model->id != $model->parent) {
+                        $parent = Category::findOne($model->parent);
+                        $model->appendTo($parent);
+                    }
+                }
+            }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
-            'dropdown' => Category::getDropdown()
+            'tree' => Category::getDropdownTree($model->id),
         ]);
     }
 
@@ -115,7 +126,12 @@ class CategoryController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        if ($model->isRoot())
+            $model->deleteWithChildren();
+        else
+            $model->delete();
 
         return $this->redirect(['index']);
     }

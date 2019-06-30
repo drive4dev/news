@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "news".
@@ -92,11 +93,21 @@ class News extends ActiveRecord
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
 
-    public static function getPaginatedDataProvider($category = false)
+    /**
+     * @param bool $category_id
+     * @return ActiveDataProvider
+     */
+    public static function getPaginatedDataProvider($category_id = false)
     {
         $params = ['active' => true];
-        if ($category) {
-            $params['category_id'] = $category;
+        if ($category_id) {
+            $childrenIds = Category::getChildIds($category_id);
+            if (is_array($childrenIds) && !empty($childrenIds)) {
+                $params['category_id'] = $childrenIds;
+                $params['category_id'][] = (int)$category_id;
+            } else {
+                $params['category_id'] = $category_id;
+            }
         }
 
         return new ActiveDataProvider([
