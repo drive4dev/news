@@ -39,11 +39,11 @@ AppAsset::register($this);
         echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'Categories',
                 'options'=> ['class'=>'dropdown-category-nav'],
                 'items' => \app\services\NavArray::getData()
             ],
+            ['label' => 'Cabinet', 'url' => ['/admin']],
             Yii::$app->user->isGuest ? (
             ['label' => 'Login', 'url' => ['/auth/login']]
             ) : (
