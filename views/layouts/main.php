@@ -5,7 +5,7 @@
 /* @var $content string */
 
 use app\widgets\Alert;
-use kartik\nav\NavX;
+use yii\bootstrap\Nav;
 use yii\helpers\Html;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -36,7 +36,7 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-        echo NavX::widget([
+        echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
