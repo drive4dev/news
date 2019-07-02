@@ -43,7 +43,7 @@ services:
   db:
     image: postgres:11.2
     volumes:
-      - ./docker/postgres/:/var/lib/postgresql/data
+      - ./docker/postgres/data/:/var/lib/postgresql/data
     restart: always
     environment:
       - POSTGRES_DB=${DB_NAME}
