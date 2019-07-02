@@ -6,4 +6,6 @@
     внутри контейнера выполняем
     установку командой composer install
     миграции  php yii migrate --interactive=0 
-    и дадим права на запись папку assets коммандой chown www-data:www-data assets
+    и дадим права на запись
+      папке web/assets коммандой chown www-data:www-data web/assets
+      папке runtime командой chmod 777 runtime
